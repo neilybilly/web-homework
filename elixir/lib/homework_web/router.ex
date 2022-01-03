@@ -5,13 +5,16 @@ defmodule HomeworkWeb.Router do
     plug(:accepts, ["json"])
   end
 
-  scope "/" do
+  scope "/", HomeworkWeb do
     pipe_through(:api)
+    resources "/users", UserController
+    resources "/merchants", MerchantController
+    resources "/transactions", TransactionController
+  end
 
-    forward("/graphiql", Absinthe.Plug.GraphiQL,
+  forward("/graphiql", Absinthe.Plug.GraphiQL,
       schema: HomeworkWeb.Schema,
       interface: :simple,
       context: %{pubsub: HomeworkWeb.Endpoint}
-    )
-  end
+  )
 end

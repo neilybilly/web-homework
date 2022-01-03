@@ -17,8 +17,18 @@ defmodule Homework.Users do
       [%User{}, ...]
 
   """
-  def list_users(_args) do
-    Repo.all(User)
+  def list_users(params) do
+    first_name = params["first_name"]
+    last_name = params["last_name"]
+
+    if(!is_nil(first_name) || !is_nil(last_name)) do
+      query = from(u in User,
+            where: ilike(u.first_name, ^"%#{first_name}%"),
+            where: ilike(u.last_name, ^"%#{last_name}%"))
+      Repo.all(query)
+    else
+      Repo.all(User)
+    end
   end
 
   @doc """
@@ -36,6 +46,23 @@ defmodule Homework.Users do
 
   """
   def get_user!(id), do: Repo.get!(User, id)
+  @doc """
+  Gets a single user by an filter.
+
+  Raises `Ecto.NoResultsError` if the User does not exist.
+
+  ## Examples
+
+      iex> get_user('greg')
+      %User{}
+
+  """
+  def get_user_by_filter(params) do
+    query = from u in "users",
+          where: u.first_name == ^params,
+          select: u.first_name
+    Repo.all(query)
+  end
 
   @doc """
   Creates a user.
@@ -50,6 +77,7 @@ defmodule Homework.Users do
 
   """
   def create_user(attrs \\ %{}) do
+    IO.inspect(attrs)
     %User{}
     |> User.changeset(attrs)
     |> Repo.insert()

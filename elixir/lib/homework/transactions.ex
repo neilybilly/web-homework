@@ -17,8 +17,18 @@ defmodule Homework.Transactions do
       [%Transaction{}, ...]
 
   """
-  def list_transactions(_args) do
-    Repo.all(Transaction)
+  def list_transactions(params) do
+    max = params["max"]
+    min = params["min"]
+
+    if(!is_nil(max) || !is_nil(min)) do
+      query = from(t in Transaction,
+            where: t.amount <= ^max,
+            where: t.amount >= ^min)
+      Repo.all(query)
+    else
+      Repo.all(Transaction)
+    end
   end
 
   @doc """
